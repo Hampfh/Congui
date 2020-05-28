@@ -20,10 +20,10 @@ namespace Congui {
     public class UiModule {
 
         // Block variables
-        private int moduleWidth;      // Width (in columns) of the UiModule
-        private int moduleHeight;     // Height (in rows) of the UiModule
-        private int scroll;     // Y offset from the top of the content
-        private int pinLines;   // Pin lines indicates how many lines should be pined (ignored by scroll)
+        private int moduleWidth;    // Width (in columns) of the UiModule
+        private int moduleHeight;   // Height (in rows) of the UiModule
+        private int scroll;         // Y offset from the top of the content
+        private int pinLines;       // Pin lines indicates how many lines should be pined (ignored by scroll)
 
         private List<Tuple<string, ConsoleColor>> content;  // Every individual line inserted in the module
         private UiModuleSettings settings;                  // Contains all setting for the current module
@@ -66,7 +66,7 @@ namespace Congui {
 
             // Add pinned lines
             for (var i = 0; i < pinLines; i++) {
-                visible.Add(parsed[i]);
+                visible.Add(parsed[i^1]);;
                 rowsRemaining--;
             }
         }
@@ -113,7 +113,6 @@ namespace Congui {
                 while(parsed.Count < innerHeight)
                     parsed.Add(Tuple.Create($"{leftBorder}{clearer}{rightBorder}", ConsoleColor.White, 0));
             }
-
             return parsed;
         }
 
@@ -144,20 +143,20 @@ namespace Congui {
 
         // Add text to the specified line in the content list (leave index at -1 to target the last line)
         public void AppendAt(string message, int index = -1) {
-            var (oldText, color) = content[index == -1 ? content.Count - 1 : index];
-            content[index == -1 ? content.Count - 1 : index] = Tuple.Create(oldText + message, color);
+            var (oldText, color) = content[index == -1 ? content.Count - 1 : index^1];;
+            content[index == -1 ? content.Count - 1 : index^1] = Tuple.Create(oldText + message, color);;
         }
 
         // Unlike AppendAt modify replaces the text at the targeted position (leave index at -1 to target the last line)
         public void ModifyAt(string message, ConsoleColor color, int index = -1) {
-            content[index == -1 ? content.Count - 1 : index] = Tuple.Create(message, color);
+            content[index == -1 ? content.Count - 1 : index^1] = Tuple.Create(message, color);;
         }
 
         // Remove characters from a specified element in the content list (leave index at -1 to target the last line)
         public void RemoveAt(int length, int index = -1) {
-            var (oldText, color) = content[index == -1 ? content.Count - 1 : index];
+            var (oldText, color) = content[index == -1 ? content.Count - 1 : index^1];;
             if (length > oldText.Length || length < 0) throw new Exception("Out of range");
-            content[index == -1 ? content.Count - 1 : index] = Tuple.Create(oldText.Substring(0, oldText.Length - length), color);
+            content[index == -1 ? content.Count - 1 : index^1] = Tuple.Create(oldText.Substring(0, oldText.Length - length), color);;
         }
 
         public void UpdateDimensions(int width, int height) {
@@ -177,7 +176,7 @@ namespace Congui {
             this.pinLines = pinCount;
         }
 
-        // ----- [ Getters ] -----
+        // ----- [ Getters ] -----;
 
         public int GetWidth() {
             if (settings.leftBorderActive && settings.rightBorderActive)
@@ -190,6 +189,6 @@ namespace Congui {
         public int GetScroll() { return scroll; }
         public int GetHeight() { return moduleHeight; }
 
-        // --- [ End Getters ] ---
+        // --- [ End Getters ] ---;
     }
 }

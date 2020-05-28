@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Congui", "Congui\Congui.csproj", "{1C4C7340-ABCB-4BC7-98DB-B851BD007EB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Congui", "Congui\Congui.csproj", "{072F1378-70A3-4C42-8652-23656733BEAC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Conhics", "Conhics\Conhics\Conhics.csproj", "{98BEC141-902B-4EE6-9546-43521BCEB4DB}"
 EndProject
@@ -13,10 +13,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1C4C7340-ABCB-4BC7-98DB-B851BD007EB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1C4C7340-ABCB-4BC7-98DB-B851BD007EB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1C4C7340-ABCB-4BC7-98DB-B851BD007EB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1C4C7340-ABCB-4BC7-98DB-B851BD007EB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{072F1378-70A3-4C42-8652-23656733BEAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{072F1378-70A3-4C42-8652-23656733BEAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{072F1378-70A3-4C42-8652-23656733BEAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{072F1378-70A3-4C42-8652-23656733BEAC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{98BEC141-902B-4EE6-9546-43521BCEB4DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{98BEC141-902B-4EE6-9546-43521BCEB4DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98BEC141-902B-4EE6-9546-43521BCEB4DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9DCD43CF-768E-4026-9872-9D18F9C19AB7}
+		SolutionGuid = {795345E3-360F-4BF8-A776-4DB0E4E064DF}
 	EndGlobalSection
 EndGlobal
