@@ -62,15 +62,15 @@ namespace Congui.Input {
 
         private static void ConfigureConsoleMode(IntPtr inputHandle) {
             int consoleMode = 0;
-            ManageNativeReturnValue(
-                returnValue: !Integration.GetConsoleMode(
+            Integration.ManageNativeReturnValue(
+                returnValue: Integration.GetConsoleMode(
                     hConsoleHandle: inputHandle,
                     lpMode: ref consoleMode));
             consoleMode |= Integration.ENABLE_MOUSE_INPUT;      // Enable mouse input
             consoleMode &= ~Integration.ENABLE_QUICK_EDIT_MODE; // Disable quick edit mode (ability to highlight text)
             consoleMode |= Integration.ENABLE_EXTENDED_FLAGS;   // Enable extended flags for quick edit to take effect
-            ManageNativeReturnValue(
-                returnValue: !Integration.SetConsoleMode(
+            Integration.ManageNativeReturnValue(
+                returnValue: Integration.SetConsoleMode(
                     hConsoleHandle: inputHandle,
                     dwMode: consoleMode));
         }
@@ -81,8 +81,8 @@ namespace Congui.Input {
             uint numberOfInputEventsRead = 0;
             while (isEnabled) {
                 if (numberOfInputEvents == 0) {
-                    ManageNativeReturnValue(
-                        returnValue: !Integration.GetNumberOfConsoleInputEvents(
+                    Integration.ManageNativeReturnValue(
+                        returnValue: Integration.GetNumberOfConsoleInputEvents(
                             hConsoleInput: inputHandle,
                             lpcNumberOfEvents: out numberOfInputEvents));
                     if (!isEnabled) {
@@ -93,20 +93,14 @@ namespace Congui.Input {
                     }
                 }
 
-                ManageNativeReturnValue(
-                    returnValue: !Integration.ReadConsoleInput(
+                Integration.ManageNativeReturnValue(
+                    returnValue: Integration.ReadConsoleInput(
                         hConsoleInput: inputHandle,
                         lpBuffer: ref inputRecord,
                         nLength: 1,
-                        lpNumberOfEventsRead: ref numberOfInputEventsRead /* always equals 1 because nLength: 1 */));
+                        lpNumberOfEventsRead: ref numberOfInputEventsRead /* always equals 1 if nLength: 1 */));
                 numberOfInputEvents -= numberOfInputEventsRead;
                 Input = new MouseInput(inputRecord.MouseEvent);
-            }
-        }
-
-        private static void ManageNativeReturnValue(bool returnValue) {
-            if (!returnValue) {
-                throw new Win32Exception();
             }
         }
     }
