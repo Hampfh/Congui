@@ -25,8 +25,8 @@ namespace Congui {
         private int scroll;         // Y offset from the top of the content
         private int pinLines;       // Pin lines indicates how many lines should be pined (ignored by scroll)
 
-        private List<Tuple<string, ConsoleColor>> content;  // Every individual line inserted in the module
-        private UiModuleSettings settings;                  // Contains all setting for the current module
+        private readonly List<Tuple<string, ConsoleColor>> content;  // Every individual line inserted in the module
+        private readonly UiModuleSettings settings;                  // Contains all setting for the current module
 
         public UiModule(int width, int height, UiModuleSettings settings) {
             this.moduleWidth = width;
@@ -42,7 +42,7 @@ namespace Congui {
             content = new List<Tuple<string, ConsoleColor>>();
         }
 
-        public void Flush() {
+        public List<Tuple<string, ConsoleColor, int>> Flush() {
             var parsed = CompileSegments();
             var horizontalBorder = new string(settings.horizontalBorderCharacter, moduleWidth);
 
@@ -54,33 +54,51 @@ namespace Congui {
             }
 
             // Regulate scroll (prevent scroll from going outside)
-            if (scroll >= parsed.Count - GetHeight())
-                scroll = parsed.Count - GetHeight();
+            if (scroll >= parsed.Count - GetInnerHeight())
+                scroll = parsed.Count - GetInnerHeight();
             else if (scroll < 0)
                 scroll = 0;
 
-            if (pinLines >= GetHeight())
+            if (pinLines >= GetInnerHeight())
                 throw new Exception("Cannot pin more than what's visible");
 
-            var rowsRemaining = GetHeight();
+            var rowsRemaining = GetInnerHeight();
 
             // Add pinned lines
             for (var i = 0; i < pinLines; i++) {
-                visible.Add(parsed[i^1]);;
+                visible.Add(parsed[i^1]);
                 rowsRemaining--;
             }
+
+            // Add all the content that should be rendered
+            for (var i = pinLines; i < parsed.Count; i++) {
+                // Do not include lines before the scroll or after the module
+                if (scroll + pinLines > i && parsed.Count > GetInnerHeight() || rowsRemaining <= 0)
+                    continue;
+
+                visible.Add(parsed[i]);
+                rowsRemaining--;
+            }
+
+            // Add the bottom border
+            if (settings.bottomBorderActive) {
+                for (var i = 0; i < settings.borderThickness; i++) 
+                    visible.Add(Tuple.Create(horizontalBorder, settings.borderColor, 0));
+            }
+
+            return visible;
         }
 
         private List<Tuple<string, ConsoleColor, int>> CompileSegments() {
             var parsed = new List<Tuple<string, ConsoleColor, int>>();
 
-            var innerWidth = GetWidth();
-            var innerHeight = GetHeight();
+            var innerWidth = GetInnerWidth();
+            var innerHeight = GetInnerHeight();
 
             // Generate border (vertical & horizontal)
             var verticalBorder = new string(settings.verticalBorderCharacter, settings.borderThickness);
             var leftBorder = settings.leftBorderActive ? verticalBorder + " " : "";
-            var rightBorder = settings.leftBorderActive ? verticalBorder + " " : "";
+            var rightBorder = settings.leftBorderActive ? " " + verticalBorder : "";
 
             // Iterate over all text segments and fit them into
             // the UiModule's dimensions
@@ -103,6 +121,11 @@ namespace Congui {
                             leftOver = string.Empty;
                             parsed = MergeLine(text, innerWidth, parsed, leftBorder, rightBorder, color, segment);
                         }
+
+                        // Remove spaces if only one on next line
+                        if (leftOver.Length >= 2 && leftOver[0] == ' ' && leftOver[1] != ' ')
+                            leftOver = leftOver.Substring(1, leftOver.Length - 1);
+                        text = leftOver;
                     }
                 }
             }
@@ -178,7 +201,9 @@ namespace Congui {
 
         // ----- [ Getters ] -----;
 
-        public int GetWidth() {
+        public int GetScroll() { return scroll; }
+
+        public int GetInnerWidth() {
             if (settings.leftBorderActive && settings.rightBorderActive)
                 return moduleWidth - settings.borderThickness * 2 - 2;
             if (settings.leftBorderActive || settings.rightBorderActive)
@@ -186,8 +211,17 @@ namespace Congui {
             return moduleWidth;
         }
 
-        public int GetScroll() { return scroll; }
-        public int GetHeight() { return moduleHeight; }
+        public int GetOuterWidth() { return moduleWidth; }
+
+        public int GetInnerHeight() {
+            if (settings.topBorderActive && settings.bottomBorderActive)
+                return moduleHeight - settings.borderThickness * 2;
+            else if (settings.topBorderActive || settings.bottomBorderActive)
+                return moduleHeight - settings.borderThickness;
+            return moduleHeight;
+        }
+
+        public int GetOuterHeight() { return moduleHeight; }
 
         // --- [ End Getters ] ---;
     }
