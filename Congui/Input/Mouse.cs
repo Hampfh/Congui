@@ -4,8 +4,9 @@
 
 namespace Congui.Input {
     using System;
-    using System.ComponentModel;
     using System.Threading.Tasks;
+
+    using Congui.Events;
 
     using Conhics;
 
@@ -14,34 +15,33 @@ namespace Congui.Input {
     /// </summary>
     public static class Mouse {
         private static bool isEnabled;
-        private static Task inputListener;
+        private static IntPtr inputHandle;
+        private static EventParameters mouseEventParameters = new EventParameters(
+            condition: () => IsEnabled,
+            subscribingMethod: UpdateInput);
+
+        private static Integration.INPUT_RECORD inputRecord = default;
+        private static uint numberOfInputEvents = 0;
+        private static uint numberOfInputEventsRead = 0;
 
         /// <summary>
-        /// Gets a value indicating whether mouse input can be enabled.
+        /// Gets or sets a value indicating whether mouse input is enabled - true, or disabled - false.
         /// </summary>
-        /// <value>A value indicating whether mouse input can be enabled.</value>
-        public static bool CanBeEnabled {
-            get {
-                // Returns whether IsCompleted is either true - implying completed, or null - implying inputListener is not initialised.
-                return inputListener?.IsCompleted != false;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether mouse input is enabled.
-        /// </summary>
-        /// <value>A value indicating whether mouse input is enabled.</value>
+        /// <value>A value indicating whether mouse input is enabled - true, or disabled - false.</value>
         public static bool IsEnabled {
             get {
                 return isEnabled;
             }
 
             set {
-                if (value && inputListener?.IsCompleted == false) {
-                    throw new Exception($"Mouse input can only be enabled if property CanBeEnabled is true. Property CanBeEnabled is {CanBeEnabled}.");
+                if (value == isEnabled) {
+                    return;
                 }
-                else if (value && value != isEnabled) {
+                else if (value) {
                     EnableMouseInput();
+                }
+                else if (!value) {
+                    DisableMouseInput();
                 }
 
                 isEnabled = value;
@@ -55,9 +55,14 @@ namespace Congui.Input {
         public static MouseInput Input { get; private set; }
 
         private static void EnableMouseInput() {
-            IntPtr inputHandle = Integration.GetStdHandle((int)Integration.StdHandle.InputHandle);
+            inputHandle = Integration.GetStdHandle((int)Integration.StdHandle.InputHandle);
             ConfigureConsoleMode(inputHandle);
-            inputListener = Task.Run(() => ListenForInput(inputHandle));
+            EventManager.RegisterEvent(mouseEventParameters);
+        }
+
+        private static void DisableMouseInput() {
+            // TODO: might reconfigure console mode...
+            EventManager.UnregisterEvent(mouseEventParameters);
         }
 
         private static void ConfigureConsoleMode(IntPtr inputHandle) {
@@ -75,33 +80,25 @@ namespace Congui.Input {
                     dwMode: consoleMode));
         }
 
-        private static void ListenForInput(IntPtr inputHandle) {
-            Integration.INPUT_RECORD inputRecord = default;
-            uint numberOfInputEvents = 0;
-            uint numberOfInputEventsRead = 0;
-            while (isEnabled) {
-                if (numberOfInputEvents == 0) {
-                    Integration.ManageNativeReturnValue(
-                        returnValue: Integration.GetNumberOfConsoleInputEvents(
-                            hConsoleInput: inputHandle,
-                            lpcNumberOfEvents: out numberOfInputEvents));
-                    if (!isEnabled) {
-                        break;
-                    }
-                    else if (numberOfInputEvents == 0) {
-                        continue;
-                    }
-                }
-
+        private static void UpdateInput() {
+            if (numberOfInputEvents == 0) {
                 Integration.ManageNativeReturnValue(
-                    returnValue: Integration.ReadConsoleInput(
+                    returnValue: Integration.GetNumberOfConsoleInputEvents(
                         hConsoleInput: inputHandle,
-                        lpBuffer: ref inputRecord,
-                        nLength: 1,
-                        lpNumberOfEventsRead: ref numberOfInputEventsRead /* always equals 1 if nLength: 1 */));
-                numberOfInputEvents -= numberOfInputEventsRead;
-                Input = new MouseInput(inputRecord.MouseEvent);
+                        lpcNumberOfEvents: out numberOfInputEvents));
+                if (!isEnabled || numberOfInputEvents == 0) {
+                    return;
+                }
             }
+
+            Integration.ManageNativeReturnValue(
+                returnValue: Integration.ReadConsoleInput(
+                    hConsoleInput: inputHandle,
+                    lpBuffer: ref inputRecord,
+                    nLength: 1,
+                    lpNumberOfEventsRead: ref numberOfInputEventsRead /* always equals 1 if nLength: 1 */));
+            numberOfInputEvents -= numberOfInputEventsRead;
+            Input = new MouseInput(inputRecord.MouseEvent);
         }
     }
 }
