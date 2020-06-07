@@ -21,7 +21,7 @@ namespace Congui {
         }
 
         public static void Setup(string title, int columns = 120, int rows = 30, short charWidth = 8, short charHeight = 16) {
-            Window.Setup(title, columns, rows, charWidth, charHeight);
+            Window.Setup(title, columns, rows, charWidth, charHeight, activeEventCapture: false);
         }
 
         private List<List<UiModule>> GenerateCanvas(IReadOnlyCollection<List<UiModuleSettings>> layout) {

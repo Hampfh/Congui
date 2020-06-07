@@ -1,3 +1,4 @@
+using System.Linq;
 // <copyright file="EventManager.cs" company="Hampfh and haholm">
 // Copyright (c) Hampfh and haholm. All rights reserved.
 // </copyright>
@@ -63,8 +64,9 @@ namespace Congui.Events {
         }
 
         private static void EventLoop() {
+            int maxProcessorCapacity = (int)Math.Ceiling(Environment.ProcessorCount / 2.0);
             var options = new ParallelOptions {
-                MaxDegreeOfParallelism = Environment.ProcessorCount,
+                MaxDegreeOfParallelism = NumberOfEvents > maxProcessorCapacity ? maxProcessorCapacity : NumberOfEvents,
             };
             while (true) {
                 if (eventDictionary.Count == 0) {
