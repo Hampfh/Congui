@@ -18,6 +18,12 @@ namespace Congui {
             this.currentWindowWidth = Console.WindowWidth;
             this.currentWindowHeight = Console.WindowHeight;
             this.canvas = GenerateCanvas(layout);
+            var dimensionsEventParameters = new Events.EventParameters(
+                condition: () => {
+                    return Console.WindowWidth != this.currentWindowWidth || Console.WindowHeight != this.currentWindowHeight;
+                },
+                subscribingMethod: this.UpdateDimensions);
+            Events.EventManager.RegisterEvent(dimensionsEventParameters);
         }
 
         public static void Setup(string title, int columns = 120, int rows = 30, short charWidth = 8, short charHeight = 16) {
