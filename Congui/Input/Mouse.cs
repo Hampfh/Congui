@@ -4,9 +4,6 @@
 
 namespace Congui.Input {
     using System;
-    using System.Threading.Tasks;
-
-    using Congui.Events;
 
     using Conhics;
 
@@ -14,37 +11,22 @@ namespace Congui.Input {
     /// Contains functionality for mouse input.
     /// </summary>
     public static class Mouse {
-        private static bool isEnabled;
-        private static IntPtr inputHandle;
-        private static EventParameters mouseEventParameters = new EventParameters(
-            condition: () => IsEnabled,
-            subscribingMethod: UpdateInput);
-
-        private static Integration.INPUT_RECORD inputRecord = default;
-        private static uint numberOfInputEvents = 0;
-        private static uint numberOfInputEventsRead = 0;
-
         /// <summary>
         /// Gets or sets a value indicating whether mouse input is enabled - true, or disabled - false.
         /// </summary>
         /// <value>A value indicating whether mouse input is enabled - true, or disabled - false.</value>
         public static bool IsEnabled {
             get {
-                return isEnabled;
+                return InputManager.IsMouseEnabled;
             }
 
             set {
-                if (value == isEnabled) {
-                    return;
-                }
-                else if (value) {
-                    EnableMouseInput();
-                }
-                else if (!value) {
-                    DisableMouseInput();
+                if (value) {
+                    InputManager.InputHandle = Integration.GetStdHandle((int)Integration.StdHandle.InputHandle);
+                    ConfigureConsoleMode(InputManager.InputHandle);
                 }
 
-                isEnabled = value;
+                InputManager.IsMouseEnabled = value;
             }
         }
 
@@ -52,18 +34,7 @@ namespace Congui.Input {
         /// Gets an instance of the <see cref="MouseInput"/> struct with the most recent mouse input.
         /// </summary>
         /// <value>An instance of the <see cref="MouseInput"/> struct with the most recent mouse input.</value>
-        public static MouseInput Input { get; private set; }
-
-        private static void EnableMouseInput() {
-            inputHandle = Integration.GetStdHandle((int)Integration.StdHandle.InputHandle);
-            ConfigureConsoleMode(inputHandle);
-            EventManager.RegisterEvent(mouseEventParameters);
-        }
-
-        private static void DisableMouseInput() {
-            // TODO: might reconfigure console mode...
-            EventManager.UnregisterEvent(mouseEventParameters);
-        }
+        public static MouseInput Input { get; internal set; }
 
         private static void ConfigureConsoleMode(IntPtr inputHandle) {
             int consoleMode = 0;
@@ -78,27 +49,6 @@ namespace Congui.Input {
                 returnValue: Integration.SetConsoleMode(
                     hConsoleHandle: inputHandle,
                     dwMode: consoleMode));
-        }
-
-        private static void UpdateInput() {
-            if (numberOfInputEvents == 0) {
-                Integration.ManageNativeReturnValue(
-                    returnValue: Integration.GetNumberOfConsoleInputEvents(
-                        hConsoleInput: inputHandle,
-                        lpcNumberOfEvents: out numberOfInputEvents));
-                if (!isEnabled || numberOfInputEvents == 0) {
-                    return;
-                }
-            }
-
-            Integration.ManageNativeReturnValue(
-                returnValue: Integration.ReadConsoleInput(
-                    hConsoleInput: inputHandle,
-                    lpBuffer: ref inputRecord,
-                    nLength: 1,
-                    lpNumberOfEventsRead: ref numberOfInputEventsRead /* always equals 1 if nLength: 1 */));
-            numberOfInputEvents -= numberOfInputEventsRead;
-            Input = new MouseInput(inputRecord.MouseEvent);
         }
     }
 }

@@ -5,6 +5,9 @@
 namespace Congui.Events {
     using System;
 
+    /// <summary>
+    /// Holds objects to be executed relative to events.
+    /// </summary>
     public class EventParameters {
         /// <summary>
         /// Initializes a new instance of the <see cref="EventParameters"/> class.

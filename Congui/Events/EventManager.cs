@@ -1,4 +1,3 @@
-using System.Linq;
 // <copyright file="EventManager.cs" company="Hampfh and haholm">
 // Copyright (c) Hampfh and haholm. All rights reserved.
 // </copyright>
@@ -6,6 +5,8 @@ using System.Linq;
 namespace Congui.Events {
     using System;
     using System.Collections.Concurrent;
+    using System.Diagnostics;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -16,9 +17,11 @@ namespace Congui.Events {
         /// The maximum number of events that can be registered.
         /// </summary>
         public const int MaximumNumberOfEvents = 10;
+        private const int PreferredEventsPerSecond = 120;
 
         private static ConcurrentDictionary<int, EventParameters> eventDictionary = new ConcurrentDictionary<int, EventParameters>();
         private static Task eventTask = new Task(EventLoop);
+        private static Stopwatch stopwatch = new Stopwatch();
 
         /// <summary>
         /// Gets a value indicating how many events have been registered.
@@ -73,6 +76,7 @@ namespace Congui.Events {
                     break;
                 }
 
+                stopwatch.Restart();
                 Parallel.ForEach(
                     source: eventDictionary.Values,
                     parallelOptions: options,
@@ -81,6 +85,11 @@ namespace Congui.Events {
                             eventParameters.SubscribingMethod();
                         }
                     });
+                stopwatch.Stop();
+                double preferredEventDuration = 1000 / PreferredEventsPerSecond;
+                if (stopwatch.ElapsedMilliseconds < preferredEventDuration) {
+                    Thread.Sleep((int)(preferredEventDuration - stopwatch.ElapsedMilliseconds));
+                }
             }
         }
     }
