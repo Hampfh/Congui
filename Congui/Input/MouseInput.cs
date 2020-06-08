@@ -22,12 +22,12 @@ namespace Congui.Input {
         /// <summary>
         /// The mouse button that was pressed.
         /// </summary>
-        public readonly MouseButtons MouseButton;
+        public readonly MouseButtons Button;
 
         /// <summary>
         /// The mouse event that occured.
         /// </summary>
-        public readonly MouseEvents MouseEvent;
+        public readonly MouseEvents Event;
 
         /// <summary>
         /// The mouse scroll wheel direction.
@@ -37,22 +37,22 @@ namespace Congui.Input {
         /// <summary>
         /// Initializes a new instance of the <see cref="MouseInput"/> struct.
         /// </summary>
-        /// <param name="mouseEventRecord">A MOUSE_EVENT_RECORD object defining mouse event information.</param>
+        /// <param name="mouseEventRecord">A Conhics.Integration.MOUSE_EVENT_RECORD object defining mouse event information.</param>
         internal MouseInput(Integration.MOUSE_EVENT_RECORD mouseEventRecord) {
             this.X = mouseEventRecord.dwMousePosition.X;
             this.Y = mouseEventRecord.dwMousePosition.Y;
-            this.MouseButton = (MouseButtons)(mouseEventRecord.dwButtonState & 0x00ff);
-            this.MouseEvent = (MouseEvents)mouseEventRecord.dwEventFlags;
+            this.Button = (MouseButtons)(mouseEventRecord.dwButtonState & 0x00ff);
+            this.Event = (MouseEvents)mouseEventRecord.dwEventFlags;
             this.MouseWheelDirection = MouseWheelDirections.None;
             int mouseWheelVelocity = mouseEventRecord.dwButtonState >> 16; // Extract the high word value, example: 0x00010004 >> 16 == 0x00000001
             bool positiveMouseWheelVelocity = mouseWheelVelocity > 0;
             if (mouseWheelVelocity == 0) {
                 return;
             }
-            else if (this.MouseEvent == MouseEvents.MouseWheeled) {
+            else if (this.Event == MouseEvents.MouseWheeled) {
                 this.MouseWheelDirection = positiveMouseWheelVelocity ? MouseWheelDirections.Forward : MouseWheelDirections.Backward;
             }
-            else if (this.MouseEvent == MouseEvents.MouseWheeledHorizontally) {
+            else if (this.Event == MouseEvents.MouseWheeledHorizontally) {
                 this.MouseWheelDirection = positiveMouseWheelVelocity ? MouseWheelDirections.Right : MouseWheelDirections.Left;
             }
         }
