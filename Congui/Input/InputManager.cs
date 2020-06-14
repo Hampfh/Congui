@@ -54,6 +54,8 @@ namespace Congui.Input {
                     Mouse.Input = new MouseInput(inputRecord.MouseEvent);
                     break;
                 case EventTypes.WindowBufferSizeEvent:
+                    WinBuf.BufferWidth = inputRecord.WindowBufferSizeEvent.dwSize.X;
+                    WinBuf.BufferHeight = inputRecord.WindowBufferSizeEvent.dwSize.Y;
                     break;
                 default:
                     return;

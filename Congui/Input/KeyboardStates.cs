@@ -6,6 +6,7 @@ namespace Congui.Input {
     /// <summary>
     /// Keyboard state values.
     /// </summary>
+    [System.Flags]
     public enum KeyboardStates : int {
         /// <summary>
         /// Caps lock is enabled.
