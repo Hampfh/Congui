@@ -37,7 +37,7 @@ namespace Congui.Input {
         /// <summary>
         /// Initializes a new instance of the <see cref="KeyboardInput"/> struct.
         /// </summary>
-        /// <param name="keyEventRecord">A Conhics.Integration.KEY_EVENT_RECORD object defining keyboard event information.</param>
+        /// <param name="keyEventRecord">A <see cref="Conhics.Integration.KEY_EVENT_RECORD"/> object defining keyboard event information.</param>
         internal KeyboardInput(Integration.KEY_EVENT_RECORD keyEventRecord) {
             this.KeyDown = keyEventRecord.bKeyDown;
             this.KeyRepeatCount = keyEventRecord.wRepeatCount;
