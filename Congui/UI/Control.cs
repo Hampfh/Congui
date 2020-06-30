@@ -7,14 +7,17 @@ namespace Congui.UI {
     using System.Text;
 
     public abstract class Control {
-        internal bool WasChanged { get; set; }
+        public Control(string name, int width, int height) {
+            this.Name = name;
+            this.Renderable = new Renderable(width, height);
+        }
 
         public string Name { get; internal set; }
 
-        public Control(string name) {
-            Name = name;
-        }
+        internal bool WasChanged { get; set; }
 
-        public abstract StringBuilder GetRenderable();
+        protected Renderable Renderable { get; set; }
+
+        public abstract Renderable GetRenderable();
     }
 }

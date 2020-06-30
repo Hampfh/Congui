@@ -13,23 +13,25 @@ namespace Congui.UI {
     public sealed class UserInterface : Control {
         private Dictionary<string, int> nameDictionary;
         private List<Control> controls;
-        private StringBuilder renderable;   // I have no better name for this atm
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterface"/> class.
         /// </summary>
-        public UserInterface() : this(controls: new List<Control>()) {
-            
+        public UserInterface()
+        : this(width: Console.WindowWidth, height: Console.WindowHeight, controls: new List<Control>()) {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserInterface"/> class.
         /// </summary>
+        /// <param name="width">The width of the <see cref="UserInterface"/>.</param>
+        /// <param name="height">The height of the <see cref="UserInterface"/>.</param>
         /// <param name="controls">A <see cref="List{Control}"/> containing the controls to be added to the <see cref="UserInterface"/>.</param>
-        public UserInterface(List<Control> controls) : base(name: "UserInterface") {
-            nameDictionary = new Dictionary<string, int>();
+        public UserInterface(int width, int height, List<Control> controls)
+        : base(name: "UserInterface", width, height) {
+            this.nameDictionary = new Dictionary<string, int>();
             foreach (var control in controls) {
-                RegisterControlName(control);
+                this.RegisterControlName(control);
             }
 
             this.controls = controls;
@@ -48,12 +50,12 @@ namespace Congui.UI {
         /// Gets a renderable <see cref="StringBuilder"/> reference containing the current <see cref="UserInterface"/> state.
         /// </summary>
         /// <returns>A <see cref="StringBuilder"/> reference containing the current <see cref="UserInterface"/> state.</returns>
-        public override StringBuilder GetRenderable() {
-            // foreach (var control in controls) {
-            //     renderable.
-            // }
+        public override Renderable GetRenderable() {
+            foreach (var control in this.controls) {
+                this.Renderable.Append(renderable: control.GetRenderable());
+            }
 
-            return null;
+            return this.Renderable;
         }
 
         private void RegisterControlName(Control control) {
