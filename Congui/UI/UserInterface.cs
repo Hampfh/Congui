@@ -28,7 +28,7 @@ namespace Congui.UI {
         /// <param name="height">The height of the <see cref="UserInterface"/>.</param>
         /// <param name="controls">A <see cref="List{Control}"/> containing the controls to be added to the <see cref="UserInterface"/>.</param>
         public UserInterface(int width, int height, List<Control> controls)
-        : base(name: "UserInterface", width, height) {
+        : base(width, height, name: "UserInterface") {
             this.nameDictionary = new Dictionary<string, int>();
             foreach (var control in controls) {
                 this.RegisterControlName(control);
