@@ -27,7 +27,7 @@ namespace Congui {
         }
 
         public static void Setup(string title, int columns = 120, int rows = 30, short charWidth = 8, short charHeight = 16) {
-            Window.Setup(title, columns, rows, charWidth, charHeight, activeEventCapture: false);
+            Screen.Setup(title, columns, rows, charWidth, charHeight, activeEventCapture: false);
         }
 
         private List<List<UiModule>> GenerateCanvas(IReadOnlyCollection<List<UiModuleSettings>> layout) {
@@ -103,7 +103,7 @@ namespace Congui {
                 for (var y = 0; y < rowUiModules[0].GetOuterHeight(); y++) {
                     foreach (var uiSegment in compiledRow) {
                         var (text, color, rememberIndex) = uiSegment[y];
-                        Window.Print(text, currentX, currentY, color);
+                        Screen.Print(text, currentX, currentY, color);
                         currentX += uiSegment[0].Item1.Length;
                     }
 
@@ -111,7 +111,7 @@ namespace Congui {
                     currentY++;
                 }
             }
-            Window.Flush();
+            Screen.Flush();
         }
 
         public void UpdateDimensions() {
@@ -122,7 +122,7 @@ namespace Congui {
             currentWindowWidth = Console.WindowWidth;
             currentWindowHeight = Console.WindowHeight;
 
-            Window.Clear();
+            Screen.Clear();
 
             // Re-Calculate modules heights
             var defaultHeight = currentWindowHeight;
