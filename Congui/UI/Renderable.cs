@@ -4,6 +4,7 @@
 
 namespace Congui.UI {
     using System;
+    using System.Drawing;
 
     /// <summary>
     /// Contains the data to be rendered.
@@ -12,27 +13,29 @@ namespace Congui.UI {
         /// <summary>
         /// The width of this <see cref="Renderable"/> measured in the parent's(???) set number of columns and rows.
         /// </summary>
-        public int Width;
+        public readonly int Width;
 
         /// <summary>
         /// The height of this <see cref="Renderable"/> measured in the parent's(???) set number of columns and rows.
         /// </summary>
-        public int Height;
+        public readonly int Height;
 
-        /// <summary>
-        /// The buffer of which to be rendered.
-        /// </summary>
-        internal readonly char[] Buffer;
+        public readonly Point Position;
+
+        private readonly char[] buffer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Renderable"/> struct.
         /// </summary>
         /// <param name="width">The width of this <see cref="Renderable"/> measured in the parent's(???) set number of columns and rows.</param>
         /// <param name="height">The height of this <see cref="Renderable"/> measured in the parent's(???) set number of columns and rows.</param>
-        public Renderable(int width, int height) {
+        /// <param name="x">The x position of this <see cref="Renderable"/>.</param>
+        /// <param name="y">The y position of this <see cref="Renderable"/>.</param>
+        public Renderable(int width, int height, int x, int y) {
             this.Width = width;
             this.Height = height;
-            this.Buffer = new char[width * height];
+            this.Position = new Point(x, y);
+            this.buffer = new char[width * height];
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace Congui.UI {
         /// <param name="y">The y coordinate.</param>
         /// <returns>The item at the specified coordinate.</returns>
         public char GetAt(int x, int y) {
-            return this.Buffer[this.CalculateIndex(x, y)];
+            return this.buffer[this.CalculateIndex(x, y)];
         }
 
         /// <summary>
@@ -52,7 +55,7 @@ namespace Congui.UI {
         /// <param name="y">The y coordinate.</param>
         /// <param name="newValue">The new value to be set at the specified coordinate.</param>
         public void SetAt(int x, int y, char newValue) {
-            this.Buffer[this.CalculateIndex(x, y)] = newValue;
+            this.buffer[this.CalculateIndex(x, y)] = newValue;
         }
 
         /// <summary>
@@ -60,14 +63,18 @@ namespace Congui.UI {
         /// </summary>
         /// <param name="renderable">The <see cref="Renderable"/> to append.</param>
         public void Append(Renderable renderable) {
-            if (renderable.Width > this.Width || renderable.Height > this.Height) {
-                throw new Exception("The renderable exceeds the size of the renderable it is to be appended to.");
+            int renderableWidthBounds = renderable.Width + renderable.Position.X;
+            int renderableHeightBounds = renderable.Height + renderable.Position.Y;
+            if (renderableWidthBounds > this.Width || renderableHeightBounds > this.Height ||
+                renderable.Position.X < 0 || renderable.Position.Y < 0) {
+                throw new Exception("The renderable exceeds the bounds of the renderable it is to be appended to.");
             }
 
-            // TODO: implement location-awareness for renderables/controls
-            for (int x = 0; x < renderable.Width; x++) {
-                for (int y = 0; y < renderable.Height; y++) {
-                    char toAppend = renderable.GetAt(x, y);
+            // TODO: implement(improve?) location-awareness for renderables/controls
+            // fetching renderable.Position etc. may cause artifacts as it may be changed while this runs? (to be tested)
+            for (int x = renderable.Position.X; x < renderableWidthBounds; x++) {
+                for (int y = renderable.Position.Y; y < renderableHeightBounds; y++) {
+                    char toAppend = renderable.GetAt(x - renderable.Position.X, y - renderable.Position.Y);
                     this.SetAt(x, y, newValue: toAppend);
                 }
             }
@@ -75,7 +82,7 @@ namespace Congui.UI {
 
         private int CalculateIndex(int x, int y) {
             int index = x + (y * this.Width);
-            if (index > this.Buffer.Length) {
+            if (index > this.buffer.Length) {
                 string outOfRangeParam;
                 if (x > this.Width) {
                     outOfRangeParam = nameof(x);
@@ -89,5 +96,5 @@ namespace Congui.UI {
 
             return index;
         }
-    }
+   }
 }

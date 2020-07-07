@@ -4,6 +4,7 @@
 
 namespace Congui.UI {
     using System;
+    using System.Drawing;
     using System.Text;
 
     /// <summary>
@@ -15,10 +16,54 @@ namespace Congui.UI {
         /// </summary>
         /// <param name="width">The width of the <see cref="Control"/>.</param>
         /// <param name="height">The height of the <see cref="Control"/>.</param>
+        /// <param name="x">The x position of the <see cref="Control"/>.</param>
+        /// <param name="y">The y position of the <see cref="Control"/>.</param>
         /// <param name="name">The unique identifier of this control.</param>
-        protected Control(int width, int height, string name) {
+        protected Control(int width, int height, int x, int y, string name) {
             this.Name = name;
-            this.Renderable = new Renderable(width, height);
+            this.Renderable = new Renderable(width, height, x, y);
+        }
+
+        public int Width {
+            get {
+                return this.Renderable.Width;
+            }
+
+            set {
+                this.Renderable = new Renderable(
+                    width: value,
+                    height: this.Renderable.Height,
+                    x: this.Renderable.Position.X,
+                    y: this.Renderable.Position.Y);
+            }
+        }
+
+        public int Height {
+            get {
+                return this.Renderable.Height;
+            }
+
+            set {
+                this.Renderable = new Renderable(
+                    width: this.Renderable.Width,
+                    height: value,
+                    x: this.Renderable.Position.X,
+                    y: this.Renderable.Position.Y);
+            }
+        }
+
+        public Point Position {
+            get {
+                return this.Renderable.Position;
+            }
+
+            set {
+                this.Renderable = new Renderable(
+                    width: this.Renderable.Width,
+                    height: this.Renderable.Height,
+                    x: value.X,
+                    y: value.Y);
+            }
         }
 
         /// <summary>
