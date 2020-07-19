@@ -18,7 +18,15 @@ namespace Congui.UI {
         /// Initializes a new instance of the <see cref="UserInterface"/> class.
         /// </summary>
         public UserInterface()
-        : this(width: Console.WindowWidth, height: Console.WindowHeight, controls: new List<Control>()) {
+        : this(width: Console.WindowWidth, height: Console.WindowHeight) {
+        }
+
+        public UserInterface(int width, int height)
+        : this(width, height, x: 0, y: 0) {
+        }
+
+        public UserInterface(int width, int height, int x, int y)
+        : this(width, height, x, y, controls: new List<Control>()) {
         }
 
         /// <summary>
@@ -27,8 +35,8 @@ namespace Congui.UI {
         /// <param name="width">The width of the <see cref="UserInterface"/>.</param>
         /// <param name="height">The height of the <see cref="UserInterface"/>.</param>
         /// <param name="controls">A <see cref="List{Control}"/> containing the controls to be added to the <see cref="UserInterface"/>.</param>
-        public UserInterface(int width, int height, List<Control> controls)
-        : base(width, height, name: "UserInterface") {
+        public UserInterface(int width, int height, int x, int y, List<Control> controls)
+        : base(width, height, x, y, name: "UserInterface") {
             this.nameDictionary = new Dictionary<string, int>();
             foreach (var control in controls) {
                 this.RegisterControlName(control);

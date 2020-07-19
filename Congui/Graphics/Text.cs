@@ -25,7 +25,7 @@ namespace Congui.Graphics {
             var font = new Font(familyName: "Arial", emSize: fontSize);
             graphics.DrawString(text, font, brush: Brushes.White, x: 0, y: 0);
             SizeF textSize = graphics.MeasureString(text, font);
-            Renderable renderable = new Renderable((int)textSize.Width, (int)textSize.Height);
+            Renderable renderable = new Renderable((int)textSize.Width, (int)textSize.Height, 0, 0);
             for (int x = 0; x < (int)textSize.Width; x++) {
                 for (int y = 0; y < (int)textSize.Height; y++) {
                     char pixel = bitmap.GetPixel(x, y).GetBrightness() > 0 ? '█' : ' ';

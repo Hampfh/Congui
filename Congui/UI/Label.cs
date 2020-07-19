@@ -24,7 +24,7 @@ namespace Congui.UI {
         /// </summary>
         /// <param name="contents">The text of which the <see cref="Label"/> should contain.</param>
         public Label(string contents)
-        : this(contents, fontSize: 20f, name: typeof(Label).Name) {
+        : this(contents, fontSize: 20f) {
         }
 
         /// <summary>
@@ -33,7 +33,11 @@ namespace Congui.UI {
         /// <param name="contents">The text of which the <see cref="Label"/> should contain.</param>
         /// <param name="fontSize">The em font size of the <see cref="Label"/>.</param>
         public Label(string contents, float fontSize)
-        : this(contents, fontSize, name: typeof(Label).Name) {
+        : this(contents, fontSize, x: 0, y: 0) {
+        }
+
+        public Label(string contents, float fontSize, int x, int y)
+        : this(contents, fontSize, x, y, name: typeof(Label).Name) {
         }
 
         /// <summary>
@@ -41,8 +45,8 @@ namespace Congui.UI {
         /// </summary>
         /// <param name="contents">The text that this <see cref="Label"/> should initially contain.</param>
         /// <param name="name">The unique identifier of this <see cref="Label"/> control.</param>
-        public Label(string contents, float fontSize, string name)
-        : base(width: 0, height: 0, name) {
+        public Label(string contents, float fontSize, int x, int y, string name)
+        : base(width: 0, height: 0, x, y, name) {
             this.Contents = contents;
             this.FontSize = fontSize;
         }
